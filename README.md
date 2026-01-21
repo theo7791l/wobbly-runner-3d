@@ -42,20 +42,48 @@ Ce projet est un **moteur de jeu 3D complet codé from scratch en C++** avec :
 ## 📦 Dépendances
 
 - **GLFW** : Gestion fenêtre et input
-- **GLAD** : Chargement OpenGL
+- **GLEW** : Chargement OpenGL
 - **GLM** : Mathématiques 3D
 - **C++17** minimum
 
 ## 🚀 Compilation
 
+### Installation des dépendances
+
 ```bash
-# Linux/Mac
+# Ubuntu/Debian
+sudo apt update
+sudo apt install build-essential cmake libglfw3-dev libglew-dev libglm-dev
+
+# Fedora/RHEL
+sudo dnf install cmake gcc-c++ glfw-devel glew-devel glm-devel
+
+# Arch Linux
+sudo pacman -S cmake glfw-x11 glew glm
+
+# macOS
+brew install cmake glfw glew glm
+```
+
+### Compilation
+
+```bash
+# Clone le repo
+git clone https://github.com/theo7791l/wobbly-runner-3d.git
+cd wobbly-runner-3d
+
+# Compile
 mkdir build && cd build
 cmake ..
-make
-./WobblyRunner
+make -j$(nproc)
 
-# Windows (Visual Studio)
+# Lance le jeu
+./WobblyRunner
+```
+
+### Windows (Visual Studio)
+
+```bash
 mkdir build && cd build
 cmake .. -G "Visual Studio 16 2019"
 cmake --build . --config Release
