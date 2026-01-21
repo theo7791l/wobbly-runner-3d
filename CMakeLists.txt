@@ -7,11 +7,24 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Options
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
-# Trouver les packages
+# Utiliser pkg-config pour trouver les packages
+find_package(PkgConfig REQUIRED)
+
+# Trouver OpenGL
 find_package(OpenGL REQUIRED)
-find_package(GLEW REQUIRED)
-find_package(glfw3 REQUIRED)
-find_package(glm REQUIRED)
+
+# Trouver GLEW via pkg-config (plus fiable)
+pkg_check_modules(GLEW REQUIRED glew)
+
+# Trouver GLFW via pkg-config
+pkg_check_modules(GLFW REQUIRED glfw3)
+
+# GLM est header-only, juste vérifier qu'il existe
+find_package(glm QUIET)
+if(NOT glm_FOUND)
+    # Si pas trouvé via CMake, on suppose qu'il est dans les chemins système
+    message(STATUS "GLM trouvé via chemins système")
+endif()
 
 # Sources du moteur
 set(ENGINE_SOURCES
@@ -38,15 +51,20 @@ target_include_directories(WobblyRunner PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${OPENGL_INCLUDE_DIR}
     ${GLEW_INCLUDE_DIRS}
+    ${GLFW_INCLUDE_DIRS}
 )
 
 # Link libraries
 target_link_libraries(WobblyRunner PRIVATE 
     OpenGL::GL
-    GLEW::GLEW
-    glfw
-    glm::glm
+    ${GLEW_LIBRARIES}
+    ${GLFW_LIBRARIES}
 )
+
+# Link GLM si trouvé via CMake
+if(glm_FOUND)
+    target_link_libraries(WobblyRunner PRIVATE glm::glm)
+endif()
 
 # Compiler warnings
 if(MSVC)
@@ -65,4 +83,6 @@ message(STATUS "==================================")
 message(STATUS "C++ Standard: ${CMAKE_CXX_STANDARD}")
 message(STATUS "Build Type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "OpenGL: ${OPENGL_LIBRARIES}")
+message(STATUS "GLEW: ${GLEW_LIBRARIES}")
+message(STATUS "GLFW: ${GLFW_LIBRARIES}")
 message(STATUS "==================================")
