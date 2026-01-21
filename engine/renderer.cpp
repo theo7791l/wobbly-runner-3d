@@ -1,6 +1,6 @@
 #include "renderer.h"
 #include <iostream>
-#include <glad/glad.h>
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
 namespace Engine {
@@ -25,7 +25,7 @@ bool Renderer::Initialize(int width, int height, const std::string& title) {
     // Configuration OpenGL
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
     glfwWindowHint(GLFW_SAMPLES, 4); // MSAA
     
     #ifdef __APPLE__
@@ -43,9 +43,11 @@ bool Renderer::Initialize(int width, int height, const std::string& title) {
     glfwMakeContextCurrent(m_window);
     glfwSwapInterval(1); // VSync
     
-    // Charger GLAD
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-        std::cerr << "Erreur: Impossible d'initialiser GLAD" << std::endl;
+    // Initialiser GLEW
+    glewExperimental = GL_TRUE;
+    GLenum err = glewInit();
+    if (err != GLEW_OK) {
+        std::cerr << "Erreur GLEW: " << glewGetErrorString(err) << std::endl;
         return false;
     }
     
